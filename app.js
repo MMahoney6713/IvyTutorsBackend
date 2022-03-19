@@ -18,7 +18,23 @@ const morgan = require("morgan");
 
 const app = express();
 
-app.use(cors());
+
+// Taken from https://www.codingdeft.com/posts/nodejs-react-cors-error/
+const domainsFromEnv = process.env.CORS_DOMAINS || "http://localhost:3000";
+const whitelist = domainsFromEnv.split(",").map(item => item.trim());
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error("Not allowed by CORS"))
+    }
+  },
+  credentials: true,
+}
+app.use(cors(corsOptions))
+
+
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(authenticateJWT);
