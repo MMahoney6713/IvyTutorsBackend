@@ -13,12 +13,6 @@ CREATE TABLE users (
   is_admin BOOLEAN NOT NULL DEFAULT FALSE
 );
 
--- CREATE TABLE students (
---   email TEXT PRIMARY KEY CHECK (position('@' IN email) > 1),
---   full_name TEXT NOT NULL,
---   password TEXT NOT NULL
--- );
-
 CREATE TABLE availability (
   tutor TEXT NOT NULL REFERENCES users ON DELETE CASCADE,
   time TIMESTAMP NOT NULL,

@@ -15,7 +15,8 @@ const router = new express.Router();
 
 /** POST / { availability } =>  { availability }
  *
- *
+ * Adds availability {tutor, time} to database
+ * 
  * Authorization required: loggedIn
  */
 

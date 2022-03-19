@@ -2,7 +2,6 @@
 
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
-const { sqlForPartialUpdate } = require("../helpers/sql");
 const User = require('./user');
 
 /** Related functions for lessons. */

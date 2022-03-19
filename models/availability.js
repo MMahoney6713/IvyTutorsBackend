@@ -3,7 +3,6 @@
 const db = require("../db");
 const {getStartOfWeek, getEndOfWeek, structureAvailability} = require("../helpers/dateTimeHelp")
 const { BadRequestError, NotFoundError } = require("../expressError");
-// const { sqlForPartialUpdate } = require("../helpers/sql");
 const User = require("./user");
 const Lesson = require('./lesson');
 

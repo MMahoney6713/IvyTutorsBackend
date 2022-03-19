@@ -5,7 +5,7 @@
 const jsonschema = require("jsonschema");
 
 const express = require("express");
-const { ensureCorrectUserOrAdmin, ensureAdmin } = require("../middleware/auth");
+const { ensureCorrectUserOrAdmin, ensureAdmin, ensureLoggedIn } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
@@ -50,7 +50,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  * Authorization required: admin or same user-as-:email
  **/
 
-router.get("/:email", ensureCorrectUserOrAdmin, async function (req, res, next) {
+router.get("/:email", ensureLoggedIn, async function (req, res, next) {
   try {
     const user = await User.get(req.params.email);
     return res.json({ user });
