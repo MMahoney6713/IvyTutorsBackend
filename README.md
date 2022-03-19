@@ -31,7 +31,7 @@ Currently, Ivy Tutors Backend has the following API endpoints available:
 
 ## Model and Database Design
 
-![alt text](https://imgur.com/a/tS73U5c)
+![alt text](https://i.imgur.com/IhdUvQJ.png)
 
 
 
