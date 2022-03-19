@@ -1,6 +1,6 @@
 # [Ivy Tutors](https://ivy-tutors.herokuapp.com/)
 
-MUI & ReactJS based Landing Pages Kit mad. To access details about the Ivy Tutors React Frontend, please see [Ivy Tutors Frontend Repository](https://github.com/MMahoney6713/IvyTutors)
+Ivy Tutors Backend application using Node/Postgres. To access details about the Ivy Tutors React Frontend, including user-flow considerations and other features, please see [Ivy Tutors Frontend Repository](https://github.com/MMahoney6713/IvyTutors)
 
 ## Built with
 
