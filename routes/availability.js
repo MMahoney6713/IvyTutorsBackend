@@ -9,31 +9,20 @@ const { BadRequestError } = require("../expressError");
 const { ensureAdmin, ensureLoggedIn} = require("../middleware/auth");
 const Availability = require("../models/availability");
 
-// const availabilityNewSchema = require("../schemas/availabilityNew.json");
-// const availabilityUpdateSchema = require("../schemas/availabilityUpdate.json");
-// const availabilitySearchSchema = require("../schemas/availabilitySearch.json");
 
 const router = new express.Router();
 
 
 /** POST / { availability } =>  { availability }
  *
- * availability should be { handle, name, description, numEmployees, logoUrl }
  *
- * Returns { handle, name, description, numEmployees, logoUrl }
- *
- * Authorization required: admin
+ * Authorization required: loggedIn
  */
 
-// router.post("/", ensureAdmin, async function (req, res, next) {
-router.post("/", async function (req, res, next) {
+
+router.post("/", ensureLoggedIn, async function (req, res, next) {
   try {
-    // const validator = jsonschema.validate(req.body, availabilityNewSchema);
-    // if (!validator.valid) {
-    //   const errs = validator.errors.map(e => e.stack);
-    //   throw new BadRequestError(errs);
-    // }
-    // console.log(res.locals);
+    
 
     const availability = await Availability.add(req.body);
     return res.status(201).json({ availability });
@@ -42,30 +31,20 @@ router.post("/", async function (req, res, next) {
   }
 });
 
-/** GET /  =>
- *   { availability: [ { handle, name, description, numEmployees, logoUrl }, ...] }
+/** GET /:tutor  => 
+ * 
+ * Returns all availabilities for tutor in given week.
  *
- * Can filter on provided search filters:
- * - minEmployees
- * - maxEmployees
- * - nameLike (will find case-insensitive, partial matches)
- *
- * Authorization required: none
+ * Authorization required: logged in
  */
 
-router.get("/:tutor", async function (req, res, next) {
+router.get("/:tutor", ensureLoggedIn, async function (req, res, next) {
 
   const { tutor } = req.params;
   const { year, month, day, tz } = req.query;
 
-  // console.log(res.locals);
 
   try {
-    // const validator = jsonschema.validate(q, availabilitySearchSchema);
-    // if (!validator.valid) {
-    //   const errs = validator.errors.map(e => e.stack);
-    //   throw new BadRequestError(errs);
-    // }
 
     const [ availability, firstDayOfWeek ] = await Availability.getTutorOneWeek(tutor, year, month, day, tz);
     return res.json({ availability, firstDayOfWeek });
@@ -75,27 +54,18 @@ router.get("/:tutor", async function (req, res, next) {
 });
 
 
-/** GET /  =>
- *   { availability: [ { handle, name, description, numEmployees, logoUrl }, ...] }
+/** GET /all/:time  => [{tutor}, {tutor}, ...]
  *
- * Can filter on provided search filters:
- * - minEmployees
- * - maxEmployees
- * - nameLike (will find case-insensitive, partial matches)
+ * Returns list of all tutors available at given time
  *
- * Authorization required: none
+ * Authorization required: logged in
  */
 
- router.get("/all/:time", async function (req, res, next) {
+ router.get("/all/:time", ensureLoggedIn, async function (req, res, next) {
 
   const { time } = req.params;
 
   try {
-    // const validator = jsonschema.validate(q, availabilitySearchSchema);
-    // if (!validator.valid) {
-    //   const errs = validator.errors.map(e => e.stack);
-    //   throw new BadRequestError(errs);
-    // }
 
     const availabilities = await Availability.getAllAvailableTutors(time);
     return res.json({ availabilities });
@@ -105,35 +75,11 @@ router.get("/:tutor", async function (req, res, next) {
 });
 
 
-/** PATCH /[handle] { fld1, fld2, ... } => { availability }
+/** DELETE /:tutor/:time  =>  { deleted: {tutor, time} }
  *
- * Patches availability data.
- *
- * fields can be: { name, description, numEmployees, logo_url }
- *
- * Returns { handle, name, description, numEmployees, logo_url }
- *
- * Authorization required: admin
- */
-
-router.patch("/:handle", ensureAdmin, async function (req, res, next) {
-//   try {
-//     const validator = jsonschema.validate(req.body, availabilityUpdateSchema);
-//     if (!validator.valid) {
-//       const errs = validator.errors.map(e => e.stack);
-//       throw new BadRequestError(errs);
-//     }
-
-//     const availability = await Availability.update(req.params.handle, req.body);
-//     return res.json({ availability });
-//   } catch (err) {
-//     return next(err);
-//   }
-});
-
-/** DELETE /[handle]  =>  { deleted: handle }
- *
- * Authorization: admin
+ * Deletes the availability for the tutor at given time.
+ * 
+ * Authorization: logged in
  */
 
 router.delete("/:tutor/:time", async function (req, res, next) {
