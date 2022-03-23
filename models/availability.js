@@ -97,13 +97,34 @@ class Availability {
    * Throws NotFoundError if not found.
    **/
 
-  static async getTutorOneWeek(tutor, year, month, day, tz) {
+  static async getTutorOneWeek(tutor, time) {
 
-    let startOfWeek = getStartOfWeek(new Date(year, month, day));
-    let endOfWeek = getEndOfWeek(new Date(year, month, day));
+    console.log(time)
+    time = new Date(time);
+    // console.log(time.toUTCString());
+    let timeUTC = new Date(time.toUTCString());
+    let tz = time.getTimezoneOffset();
 
-    startOfWeek.setMinutes(startOfWeek.getMinutes() + parseInt(tz));
-    endOfWeek.setMinutes(endOfWeek.getMinutes() + parseInt(tz));
+    console.log(time)
+    // console.log(timeUTC)
+    // console.log(tz)
+
+    let startOfWeek = getStartOfWeek(timeUTC);
+    let endOfWeek = getEndOfWeek(timeUTC);
+    
+
+    // console.log(startOfWeek)
+    // console.log(endOfWeek);
+    
+
+    // let startOfWeek = getStartOfWeek(new Date(year, month, day));
+    // let endOfWeek = getEndOfWeek(new Date(year, month, day));
+
+    // startOfWeek.setMinutes(startOfWeek.getMinutes() + parseInt(tz));
+    // endOfWeek.setMinutes(endOfWeek.getMinutes() + parseInt(tz));
+
+    // console.log(startOfWeek)
+    // console.log(endOfWeek);
 
     const availabilityRes = await db.query(
           `SELECT time
@@ -113,9 +134,12 @@ class Availability {
            AND time <= $3`,
         [tutor, startOfWeek, endOfWeek]);
 
-    const availability = availabilityRes.rows;
 
-    if (!availability) throw new NotFoundError(`No availability for ${tutor}`);
+    const availability = availabilityRes.rows;
+    // console.log(availabilityRes)
+    // console.log(availability);
+
+    // if (!availability) throw new NotFoundError(`No availability for ${tutor}`);
     
     return [structureAvailability(availability, tz), startOfWeek];
   }

@@ -24,10 +24,16 @@ const structureAvailability = (availability, tz) => {
     const availabilityMap = new Map();
 
     availability.forEach(avail => {
+
+        console.log(tz);
+
+        console.log(`UTC: ${avail.time}`);
         
         // Set time to UTC with adjustment for user's timezone
         let availTime = new Date(avail.time);
         availTime.setUTCMinutes(availTime.getUTCMinutes() - tz);
+
+        console.log(`Local: ${availTime}`);
 
         // Set hours and minutes strings, adding a leading 0 if needed.
         let hours = `${availTime.getHours()}`;

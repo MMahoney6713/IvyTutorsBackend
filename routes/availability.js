@@ -32,28 +32,6 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
   }
 });
 
-/** GET /:tutor  => 
- * 
- * Returns all availabilities for tutor in given week.
- *
- * Authorization required: logged in
- */
-
-router.get("/:tutor", ensureLoggedIn, async function (req, res, next) {
-
-  const { tutor } = req.params;
-  const { year, month, day, tz } = req.query;
-
-
-  try {
-
-    const [ availability, firstDayOfWeek ] = await Availability.getTutorOneWeek(tutor, year, month, day, tz);
-    return res.json({ availability, firstDayOfWeek });
-  } catch (err) {
-    return next(err);
-  }
-});
-
 
 /** GET /all/:time  => [{tutor}, {tutor}, ...]
  *
@@ -74,6 +52,36 @@ router.get("/:tutor", ensureLoggedIn, async function (req, res, next) {
     return next(err);
   }
 });
+
+
+/** GET /:tutor/:time  => 
+ * 
+ * Returns all availabilities for tutor in given week.
+ *
+ * Authorization required: logged in
+ */
+
+router.get("/:tutor/:time", ensureLoggedIn, async function (req, res, next) {
+
+  const { tutor, time } = req.params;
+  // const { year, month, day, tz } = req.query; 
+
+  try {
+
+    // const [ availability, firstDayOfWeek ] = await Availability.getTutorOneWeek(tutor, year, month, day, tz);
+    const [ availability, firstDayOfWeek ] = await Availability.getTutorOneWeek(tutor, time);
+
+    // console.log(availability);
+
+    // return res.json({ availability, firstDayOfWeek });
+    return res.json({ availability });
+  } catch (err) {
+    return next(err);
+  }
+});
+
+
+
 
 
 /** DELETE /:tutor/:time  =>  { deleted: {tutor, time} }
