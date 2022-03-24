@@ -7,13 +7,14 @@ const User = require('./user');
 /** Related functions for lessons. */
 
 class Lesson {
-  /** Create a lesson (from data), update db, return new lesson data.
+  /** Create a lesson for tutor and student, update db, return new lesson data.
    *
-   * data should be { handle, name, description, numEmployees, logoUrl }
-   *
-   * Returns { handle, name, description, numEmployees, logoUrl }
-   *
-   * Throws BadRequestError if lesson already in database.
+   * Returned lesson contains the JOIN of the scheduled_lessons table with the 
+   * lesson_types table, including lesson title, description, credits.
+   * 
+   * Throws BadRequestError if lesson between tutor and student at time is
+   * already in database.
+   * 
    * */
 
   static async create({ tutor, student, time, lessonCode='eng'}) {
@@ -62,10 +63,7 @@ class Lesson {
   }
 
 
-  /** Given a lesson handle, return data about lesson.
-   *
-   * Returns { handle, name, description, numEmployees, logoUrl, jobs }
-   *   where jobs is [{ id, title, salary, equity }, ...]
+  /** Given a user, return all lessons scheduled for that user
    *
    * Throws NotFoundError if not found.
    **/
@@ -91,8 +89,6 @@ class Lesson {
 
     const lessons = lessonRes.rows;
 
-    // console.log(lessons);
-
     if (lessons) {
       for (let lesson of lessons) {
         const studentRes = await User.get(lesson.student);
@@ -108,9 +104,10 @@ class Lesson {
   }
 
 
-
-
-
+  /** Given a time, return all lessons scheduled at that time.
+   *
+   * Throws NotFoundError if not found.
+   **/
 
   static async getAllAtTime(time) {
 
@@ -126,59 +123,6 @@ class Lesson {
     return lessons;
   }
 
-  /** Update lesson data with `data`.
-   *
-   * This is a "partial update" --- it's fine if data doesn't contain all the
-   * fields; this only changes provided ones.
-   *
-   * Data can include: {name, description, numEmployees, logoUrl}
-   *
-   * Returns {handle, name, description, numEmployees, logoUrl}
-   *
-   * Throws NotFoundError if not found.
-   */
-
-//   static async update(handle, data) {
-//     const { setCols, values } = sqlForPartialUpdate(
-//         data,
-//         {
-//           numEmployees: "num_employees",
-//           logoUrl: "logo_url",
-//         });
-//     const handleVarIdx = "$" + (values.length + 1);
-
-//     const querySql = `UPDATE lessons 
-//                       SET ${setCols} 
-//                       WHERE handle = ${handleVarIdx} 
-//                       RETURNING handle, 
-//                                 name, 
-//                                 description, 
-//                                 num_employees AS "numEmployees", 
-//                                 logo_url AS "logoUrl"`;
-//     const result = await db.query(querySql, [...values, handle]);
-//     const lesson = result.rows[0];
-
-//     if (!lesson) throw new NotFoundError(`No lesson: ${handle}`);
-
-//     return lesson;
-//   }
-
-  /** Delete given lesson from database; returns undefined.
-   *
-   * Throws NotFoundError if lesson not found.
-   **/
-
-//   static async remove(handle) {
-//     const result = await db.query(
-//           `DELETE
-//            FROM lessons
-//            WHERE handle = $1
-//            RETURNING handle`,
-//         [handle]);
-//     const lesson = result.rows[0];
-
-//     if (!lesson) throw new NotFoundError(`No lesson: ${handle}`);
-//   }
 }
 
 

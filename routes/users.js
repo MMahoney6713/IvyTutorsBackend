@@ -47,7 +47,7 @@ router.post("/", ensureAdmin, async function (req, res, next) {
  *
  * Returns { user }
  *
- * Authorization required: admin or same user-as-:email
+ * Authorization required: logged in
  **/
 
 router.get("/:email", ensureLoggedIn, async function (req, res, next) {

@@ -91,7 +91,7 @@ router.get("/:tutor/:time", ensureLoggedIn, async function (req, res, next) {
  * Authorization: logged in
  */
 
-router.delete("/:tutor/:time", async function (req, res, next) {
+router.delete("/:tutor/:time", ensureLoggedIn, async function (req, res, next) {
   try {
     let {tutor, time} = req.params;
     await Availability.remove(tutor, time);

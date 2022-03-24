@@ -9,11 +9,7 @@ const Lesson = require('./lesson');
 /** Related functions for availability. */
 
 class Availability {
-  /** Create a availability (from data), update db, return new availability data.
-   *
-   * data should be { handle, name, description, numEmployees, logoUrl }
-   *
-   * Returns { handle, name, description, numEmployees, logoUrl }
+  /** Create a availability for tutor at time, update db, returns new availability data.
    *
    * Throws BadRequestError if availability already in database.
    * */
@@ -49,14 +45,9 @@ class Availability {
     return availability;
   }
 
-  /** Find all availability (optional filter on searchFilters).
+  /** Find all availabilities across all tutors at given time.
    *
-   * searchFilters (all optional):
-   * - minEmployees
-   * - maxEmployees
-   * - name (will find case-insensitive, partial matches)
-   *
-   * Returns [{ handle, name, description, numEmployees, logoUrl }, ...]
+   * Returns array of tutor objects
    * */
 
   static async getAllAvailableTutors(time) {
@@ -84,47 +75,33 @@ class Availability {
       }
     }
 
-    // if (!availabilities) throw new NotFoundError(`No availability for ${time}`);
-
     return tutorsAvailable;
   }
 
-  /** Given a availability handle, return data about availability.
+  /** Given a tutor and time, return all availability for tutor in that week time span.
    *
-   * Returns { handle, name, description, numEmployees, logoUrl, jobs }
-   *   where jobs is [{ id, title, salary, equity }, ...]
+   * Returns an array of availability objects, structured such that each object represents
+   * the week's availabilities at given time of day:
+   * {time: '0100', m: 'available', t: 'available', w: '', th: '', f: '', s: '', su: ''},
    *
-   * Throws NotFoundError if not found.
    **/
 
   static async getTutorOneWeek(tutor, time) {
 
     console.log(time)
     time = new Date(time);
-    // console.log(time.toUTCString());
     let timeUTC = new Date(time.toUTCString());
     let tz = time.getTimezoneOffset();
-
-    console.log(time)
-    // console.log(timeUTC)
-    // console.log(tz)
 
     let startOfWeek = getStartOfWeek(timeUTC);
     let endOfWeek = getEndOfWeek(timeUTC);
     
-
-    // console.log(startOfWeek)
-    // console.log(endOfWeek);
-    
-
     // let startOfWeek = getStartOfWeek(new Date(year, month, day));
     // let endOfWeek = getEndOfWeek(new Date(year, month, day));
 
     // startOfWeek.setMinutes(startOfWeek.getMinutes() + parseInt(tz));
     // endOfWeek.setMinutes(endOfWeek.getMinutes() + parseInt(tz));
 
-    // console.log(startOfWeek)
-    // console.log(endOfWeek);
 
     const availabilityRes = await db.query(
           `SELECT time
@@ -136,50 +113,10 @@ class Availability {
 
 
     const availability = availabilityRes.rows;
-    // console.log(availabilityRes)
-    // console.log(availability);
-
-    // if (!availability) throw new NotFoundError(`No availability for ${tutor}`);
     
     return [structureAvailability(availability, tz), startOfWeek];
   }
-
-  /** Update availability data with `data`.
-   *
-   * This is a "partial update" --- it's fine if data doesn't contain all the
-   * fields; this only changes provided ones.
-   *
-   * Data can include: {name, description, numEmployees, logoUrl}
-   *
-   * Returns {handle, name, description, numEmployees, logoUrl}
-   *
-   * Throws NotFoundError if not found.
-   */
-
-  static async update(handle, data) {
-    // const { setCols, values } = sqlForPartialUpdate(
-    //     data,
-    //     {
-    //       numEmployees: "num_employees",
-    //       logoUrl: "logo_url",
-    //     });
-    // const handleVarIdx = "$" + (values.length + 1);
-
-    // const querySql = `UPDATE availability 
-    //                   SET ${setCols} 
-    //                   WHERE handle = ${handleVarIdx} 
-    //                   RETURNING handle, 
-    //                             name, 
-    //                             description, 
-    //                             num_employees AS "numEmployees", 
-    //                             logo_url AS "logoUrl"`;
-    // const result = await db.query(querySql, [...values, handle]);
-    // const availability = result.rows[0];
-
-    // if (!availability) throw new NotFoundError(`No availability: ${handle}`);
-
-    // return availability;
-  }
+  
 
   /** Delete given availability from database; returns undefined.
    *
